@@ -5,22 +5,23 @@ import requests
 base_url = "https://raw.githubusercontent.com/Tennismylife/TML-Database/master"
 
 # Local save folder
-output_dir = os.path.join("..","..","Data","OriginalCSVs")  # relative path from script to project root/Data
+output_dir = os.path.join("..", "..", "Data", "OriginalCSVs")
 os.makedirs(output_dir, exist_ok=True)
 
-# Files you want (could be automated by scraping GitHub API)
-files = [
-    #"ATP_Database.csv",
-    #"ongoing_tourneys.csv",
-    *[f"{year}.csv" for year in range(1968, 2025+1)]
-    #1968-2025
-]
+# Download all years 1968–2025
+for year in range(1968, 2026):
+    file = f"{year}.csv"
+    file_path = os.path.join(output_dir, file)
 
-for file in files:
+    # Skip if file already exists
+    if os.path.exists(file_path):
+        print(f"Already exists, skipping: {file}")
+        continue
+
     url = f"{base_url}/{file}"
     r = requests.get(url)
     if r.status_code == 200:
-        with open(os.path.join(output_dir, file), "wb") as f:
+        with open(file_path, "wb") as f:
             f.write(r.content)
         print(f"Downloaded {file}")
     else:
